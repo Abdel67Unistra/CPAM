@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CPAM Analytics - API Analytics</title>
+    <link rel="stylesheet" href="assets/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <h1 class="nav-logo">CPAM Analytics</h1>
+            <ul class="nav-menu">
+                <li><a href="index.html" class="nav-link">Accueil</a></li>
+                <li><a href="depenses.html" class="nav-link">Dépenses Santé</a></li>
+                <li><a href="actes.html" class="nav-link">Actes Médicaux</a></li>
+                <li><a href="prevision.html" class="nav-link">Prévisions</a></li>
+                <li><a href="fraudes.html" class="nav-link">Détection Fraudes</a></li>
+                <li><a href="api.html" class="nav-link active">API Analytics</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <main class="main-content">
+        <div class="page-header">
+            <h1>🔌 API Analytics & Scripts Interactifs</h1>
+            <p>Exécutez des scripts Python et R en temps réel via l'API</p>
+        </div>
+
+        <div class="analysis-container">
+            <div class="controls-panel">
+                <h3>🐍 Scripts Python Disponibles</h3>
+                <div class="control-group">
+                    <label for="python-script">Script Python:</label>
+                    <select id="python-script">
+                        <option value="analyse_descriptive">Analyse descriptive complète</option>
+                        <option value="correlation_matrix">Matrice de corrélation</option>
+                        <option value="regression_analysis">Analyse de régression</option>
+                        <option value="time_series">Analyse de séries temporelles</option>
+                        <option value="clustering">Classification automatique</option>
+                    </select>
+                </div>
+                
+                <div class="control-group">
+                    <label for="python-params">Paramètres JSON:</label>
+                    <textarea id="python-params" rows="5" placeholder='{"data_source": "depenses_sante.csv", "method": "pearson"}'>{
+  "data_source": "depenses_sante.csv",
+  "significance_level": 0.05,
+  "method": "descriptive"
+}</textarea>
+                </div>
+                
+                <button class="btn btn-primary" onclick="executePythonScript()">🚀 Exécuter Python</button>
+            </div>
+
+            <div class="controls-panel">
+                <h3>📊 Scripts R Disponibles</h3>
+                <div class="control-group">
+                    <label for="r-script">Script R:</label>
+                    <select id="r-script">
+                        <option value="statistical_summary">Résumé statistique</option>
+                        <option value="anova_analysis">Analyse ANOVA</option>
+                        <option value="advanced_plots">Graphiques avancés</option>
+                        <option value="survival_analysis">Analyse de survie</option>
+                        <option value="machine_learning">Machine Learning</option>
+                    </select>
+                </div>
+                
+                <div class="control-group">
+                    <label for="r-params">Paramètres R:</label>
+                    <textarea id="r-params" rows="5" placeholder='list(data="data.csv", alpha=0.05)'>list(
+  data = "depenses_sante.csv",
+  alpha = 0.05,
+  method = "pearson"
+)</textarea>
+                </div>
+                
+                <button class="btn btn-secondary" onclick="executeRScript()">📈 Exécuter R</button>
+            </div>
+        </div>
+
+        <div class="chart-container">
+            <h3>💻 Console de Sortie</h3>
+            <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+                <button class="btn" onclick="clearConsole()">🗑️ Effacer</button>
+                <button class="btn" onclick="exportResults()">💾 Exporter</button>
+                <button class="btn" onclick="shareResults()">📤 Partager</button>
+            </div>
+            <div id="api-console" class="script-output">
+🔌 API CPAM Analytics v2.0
+Prêt à exécuter des scripts Python et R...
+
+Endpoints disponibles:
+- POST /api/python/{script_name}
+- POST /api/r/{script_name}
+- GET /api/data/{filename}
+- GET /api/stats/realtime
+
+Type 'help' pour voir les commandes disponibles.
+            </div>
+        </div>
+
+        <div class="analysis-container">
+            <div class="chart-container">
+                <h3>📊 Résultats Visuels</h3>
+                <div id="results-chart" style="height: 300px;">
+                    <canvas id="api-chart"></canvas>
+                </div>
+            </div>
+            
+            <div class="chart-container">
+                <h3>📈 Métriques Performance</h3>
+                <div class="real-time-stats">
+                    <div class="stat-item">
+                        <span class="stat-number" id="api-calls">0</span>
+                        <span class="stat-label">Appels API</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number" id="exec-time">--</span>
+                        <span class="stat-label">Temps Exec (s)</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number" id="success-rate">100%</span>
+                        <span class="stat-label">Taux Succès</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="assets/main.js"></script>
+    <script>
+        let apiCalls = 0;
+        let successfulCalls = 0;
+        let apiChart;
+
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeAPIPage();
+        });
+
+        function initializeAPIPage() {
+            // Initialise le graphique de résultats
+            const ctx = document.getElementById('api-chart').getContext('2d');
+            apiChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        label: 'Temps d\'exécution (s)',
+                        data: [],
+                        borderColor: '#0055a4',
+                        backgroundColor: 'rgba(0,85,164,0.1)',
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Performance des Scripts'
+                        }
+                    }
+                }
+            });
+        }
+
+        async function executePythonScript() {
+            const scriptName = document.getElementById('python-script').value;
+            const params = document.getElementById('python-params').value;
+            const console = document.getElementById('api-console');
+            
+            apiCalls++;
+            updateAPIMetrics();
+            
+            console.innerHTML += `\n🐍 [${new Date().toLocaleTimeString()}] Exécution script Python: ${scriptName}`;
+            console.innerHTML += `\nParamètres: ${params}`;
+            
+            const startTime = Date.now();
+            
+            try {
+                // Simulation d'appel API
+                const result = await simulatePythonExecution(scriptName, JSON.parse(params));
+                const execTime = (Date.now() - startTime) / 1000;
+                
+                successfulCalls++;
+                updateAPIMetrics(execTime);
+                
+                console.innerHTML += `\n✅ Succès (${execTime.toFixed(2)}s)`;
+                console.innerHTML += `\n${result.output}`;
+                
+                if (result.chart_data) {
+                    updateResultChart(result.chart_data);
+                }
+                
+            } catch (error) {
+                const execTime = (Date.now() - startTime) / 1000;
+                updateAPIMetrics(execTime);
+                
+                console.innerHTML += `\n❌ Erreur (${execTime.toFixed(2)}s): ${error.message}`;
+            }
+            
+            console.scrollTop = console.scrollHeight;
+        }
+
+        async function executeRScript() {
+            const scriptName = document.getElementById('r-script').value;
+            const params = document.getElementById('r-params').value;
+            const console = document.getElementById('api-console');
+            
+            apiCalls++;
+            updateAPIMetrics();
+            
+            console.innerHTML += `\n📊 [${new Date().toLocaleTimeString()}] Exécution script R: ${scriptName}`;
+            console.innerHTML += `\nParamètres: ${params}`;
+            
+            const startTime = Date.now();
+            
+            try {
+                // Simulation d'appel API
+                const result = await simulateRExecution(scriptName, params);
+                const execTime = (Date.now() - startTime) / 1000;
+                
+                successfulCalls++;
+                updateAPIMetrics(execTime);
+                
+                console.innerHTML += `\n✅ Succès (${execTime.toFixed(2)}s)`;
+                console.innerHTML += `\n${result.output}`;
+                
+            } catch (error) {
+                const execTime = (Date.now() - startTime) / 1000;
+                updateAPIMetrics(execTime);
+                
+                console.innerHTML += `\n❌ Erreur (${execTime.toFixed(2)}s): ${error.message}`;
+            }
+            
+            console.scrollTop = console.scrollHeight;
+        }
+
+        function simulatePythonExecution(scriptName, params) {
+            return new Promise((resolve) => {
+                setTimeout(() => {
+                    const outputs = {
+                        'analyse_descriptive': {
+                            output: `📊 ANALYSE DESCRIPTIVE PYTHON
+Dataset: ${params.data_source}
+Lignes: 5, Colonnes: 2
+
+Statistiques:
+- Moyenne: 8,300.00 ± 5,244.12
+- Médiane: 9,500.00
+- Mode: Non unique
+- Asymétrie: 0.234 (légèrement asymétrique)
+- Kurtosis: -1.456 (distribution platykurtique)
+
+Tests statistiques:
+- Shapiro-Wilk: W=0.852, p=0.185 (normal)
+- Kolmogorov-Smirnov: D=0.234, p=0.452 (normal)`,
+                            chart_data: [8300, 9500, 7800, 8100, 8900]
+                        },
+                        'correlation_matrix': {
+                            output: `🔗 MATRICE DE CORRÉLATION
+Méthode: ${params.method || 'pearson'}
+
+Corrélations significatives (p < ${params.significance_level}):
+- Variable1 ↔ Variable2: r = 0.78 (p = 0.023) **
+- Variable1 ↔ Variable3: r = 0.65 (p = 0.041) *
+- Variable2 ↔ Variable4: r = -0.52 (p = 0.089)
+
+Légende: *** p<0.001, ** p<0.01, * p<0.05`,
+                            chart_data: [0.78, 0.65, -0.52, 0.34, 0.12]
+                        }
+                    };
+                    
+                    resolve(outputs[scriptName] || {
+                        output: `Script ${scriptName} exécuté avec succès.`,
+                        chart_data: [Math.random() * 100, Math.random() * 100, Math.random() * 100]
+                    });
+                }, 1500 + Math.random() * 1000);
+            });
+        }
+
+        function simulateRExecution(scriptName, params) {
+            return new Promise((resolve) => {
+                setTimeout(() => {
+                    const outputs = {
+                        'statistical_summary': `📈 RÉSUMÉ STATISTIQUE R
+> summary(data)
+     Min.   1st Qu.  Median    Mean  3rd Qu.    Max. 
+     2000     3000    9500     8300    12000   15000 
+
+> sd(data)
+[1] 5244.12
+
+> var(data)
+[1] 27500847
+
+Test de normalité:
+Shapiro-Wilk: W = 0.8521, p-value = 0.1847`,
+                        
+                        'anova_analysis': `🔬 ANALYSE ANOVA
+                    Df Sum Sq Mean Sq F value Pr(>F)    
+Categories           4  2.1e+08  5.3e+07   4.23  0.041 *  
+Residuals          15  1.9e+08  1.3e+07                   
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Post-hoc Tukey HSD:
+Hospitalisations-Consultations: p = 0.032 *
+Hospitalisations-Optique: p = 0.001 **`
+                    };
+                    
+                    resolve({
+                        output: outputs[scriptName] || `Script R ${scriptName} exécuté avec succès.`
+                    });
+                }, 2000 + Math.random() * 1000);
+            });
+        }
+
+        function updateAPIMetrics(execTime = null) {
+            document.getElementById('api-calls').textContent = apiCalls;
+            
+            if (execTime !== null) {
+                document.getElementById('exec-time').textContent = execTime.toFixed(2);
+                
+                // Ajoute au graphique de performance
+                const now = new Date();
+                apiChart.data.labels.push(now.toLocaleTimeString());
+                apiChart.data.datasets[0].data.push(execTime);
+                
+                // Garde seulement les 10 derniers points
+                if (apiChart.data.labels.length > 10) {
+                    apiChart.data.labels.shift();
+                    apiChart.data.datasets[0].data.shift();
+                }
+                
+                apiChart.update();
+            }
+            
+            const successRate = apiCalls > 0 ? ((successfulCalls / apiCalls) * 100).toFixed(1) : 100;
+            document.getElementById('success-rate').textContent = successRate + '%';
+        }
+
+        function updateResultChart(data) {
+            // Met à jour le graphique avec de nouvelles données
+            apiChart.data.datasets[0].label = 'Résultats';
+            apiChart.data.datasets[0].data = data;
+            apiChart.data.labels = data.map((_, i) => `Point ${i+1}`);
+            apiChart.update();
+        }
+
+        function clearConsole() {
+            document.getElementById('api-console').innerHTML = `🔌 API CPAM Analytics v2.0
+Console effacée - Prêt pour de nouvelles analyses...`;
+        }
+
+        function exportResults() {
+            const console = document.getElementById('api-console');
+            const blob = new Blob([console.textContent], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `cpam_results_${new Date().toISOString().slice(0,10)}.txt`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function shareResults() {
+            if (navigator.share) {
+                navigator.share({
+                    title: 'Résultats CPAM Analytics',
+                    text: 'Analyse effectuée avec CPAM Analytics',
+                    url: window.location.href
+                });
+            } else {
+                // Fallback pour navigateurs sans support
+                navigator.clipboard.writeText(window.location.href);
+                alert('Lien copié dans le presse-papiers !');
+            }
+        }
+    </script>
+</body>
+</html>

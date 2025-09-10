@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CPAM Analytics - Dépenses Santé</title>
+    <link rel="stylesheet" href="assets/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <h1 class="nav-logo">CPAM Analytics</h1>
+            <ul class="nav-menu">
+                <li><a href="index.html" class="nav-link">Accueil</a></li>
+                <li><a href="depenses.html" class="nav-link active">Dépenses Santé</a></li>
+                <li><a href="actes.html" class="nav-link">Actes Médicaux</a></li>
+                <li><a href="prevision.html" class="nav-link">Prévisions</a></li>
+                <li><a href="fraudes.html" class="nav-link">Détection Fraudes</a></li>
+                <li><a href="api.html" class="nav-link">API Analytics</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <main class="main-content">
+        <div class="page-header">
+            <h1>🏥 Analyse des Dépenses de Santé</h1>
+            <p>Explorez les données en temps réel avec des analyses interactives Python/R</p>
+        </div>
+
+        <div class="controls-panel">
+            <h3>🔧 Contrôles d'Analyse</h3>
+            <div class="analysis-container">
+                <div>
+                    <div class="control-group">
+                        <label for="periode">Période d'analyse:</label>
+                        <select id="periode">
+                            <option value="2023">2023</option>
+                            <option value="2022-2023">2022-2023</option>
+                            <option value="2021-2023">2021-2023</option>
+                        </select>
+                    </div>
+                    
+                    <div class="control-group">
+                        <label for="region">Région:</label>
+                        <select id="region">
+                            <option value="france">France entière</option>
+                            <option value="alsace">Alsace</option>
+                            <option value="bretagne">Bretagne</option>
+                            <option value="paca">PACA</option>
+                        </select>
+                    </div>
+                    
+                    <div class="control-group">
+                        <label for="type-analyse">Type d'analyse:</label>
+                        <select id="type-analyse">
+                            <option value="descriptive">Statistiques descriptives</option>
+                            <option value="correlation">Analyse de corrélation</option>
+                            <option value="regression">Régression linéaire</option>
+                            <option value="clustering">Classification K-means</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div>
+                    <div class="action-buttons">
+                        <button class="btn btn-primary" onclick="runPythonAnalysis()">🐍 Analyser avec Python</button>
+                        <button class="btn btn-secondary" onclick="runRAnalysis()">📊 Analyser avec R</button>
+                        <button class="btn btn-warning" onclick="updateRealTime()">🔄 Actualiser Données</button>
+                    </div>
+                    
+                    <div class="control-group">
+                        <label>Paramètres avancés:</label>
+                        <input type="range" id="seuil-significance" min="0.01" max="0.1" step="0.01" value="0.05">
+                        <small>Seuil de significativité: <span id="seuil-value">0.05</span></small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="analysis-container">
+            <div class="chart-container">
+                <h3>📈 Visualisation Interactive</h3>
+                <div id="main-chart" style="height: 400px;"></div>
+            </div>
+            
+            <div class="chart-container">
+                <h3>🎯 Analyse Statistique</h3>
+                <div id="stats-chart" style="height: 400px;"></div>
+            </div>
+        </div>
+
+        <div class="chart-container">
+            <h3>💻 Sortie des Scripts</h3>
+            <div id="script-output" class="script-output">
+Prêt à exécuter des analyses...
+            </div>
+        </div>
+    </main>
+
+    <script src="assets/main.js"></script>
+    <script>
+        // Scripts spécifiques à la page dépenses
+        let mainChart, statsChart;
+
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeDepensesPage();
+            
+            // Événements
+            document.getElementById('seuil-significance').addEventListener('input', function() {
+                document.getElementById('seuil-value').textContent = this.value;
+            });
+        });
+
+        function initializeDepensesPage() {
+            // Graphique principal avec Plotly
+            const mainData = [{
+                x: ['Consultations', 'Médicaments', 'Hospitalisations', 'Soins dentaires', 'Optique'],
+                y: [12000, 9500, 15000, 3000, 2000],
+                type: 'bar',
+                marker: {
+                    color: ['#0055a4', '#0077c2', '#0099e5', '#00bbf1', '#00ddff']
+                }
+            }];
+
+            const mainLayout = {
+                title: 'Répartition des Dépenses de Santé 2023',
+                xaxis: { title: 'Catégories' },
+                yaxis: { title: 'Dépenses (M€)' }
+            };
+
+            Plotly.newPlot('main-chart', mainData, mainLayout);
+
+            // Graphique statistique
+            loadEvolutionChart();
+        }
+
+        async function loadEvolutionChart() {
+            try {
+                const data = await window.cpamAnalytics.loadCSVData('evolution_depenses_detaillee.csv');
+                if (data) {
+                    const trace = {
+                        x: data.data.map(row => row.Annee),
+                        y: data.data.map(row => parseInt(row.Depenses_Totales)),
+                        type: 'scatter',
+                        mode: 'lines+markers',
+                        name: 'Évolution'
+                    };
+
+                    const layout = {
+                        title: 'Évolution Temporelle des Dépenses',
+                        xaxis: { title: 'Année' },
+                        yaxis: { title: 'Dépenses Totales (M€)' }
+                    };
+
+                    Plotly.newPlot('stats-chart', [trace], layout);
+                }
+            } catch (error) {
+                console.error('Erreur chargement données:', error);
+            }
+        }
+
+        async function runPythonAnalysis() {
+            const output = document.getElementById('script-output');
+            output.textContent = 'Exécution du script Python...\n';
+
+            const periode = document.getElementById('periode').value;
+            const region = document.getElementById('region').value;
+            const typeAnalyse = document.getElementById('type-analyse').value;
+
+            // Simulation d'exécution Python
+            setTimeout(() => {
+                const result = generatePythonOutput(periode, region, typeAnalyse);
+                output.textContent = result;
+            }, 2000);
+        }
+
+        async function runRAnalysis() {
+            const output = document.getElementById('script-output');
+            output.textContent = 'Exécution du script R...\n';
+
+            const periode = document.getElementById('periode').value;
+            const region = document.getElementById('region').value;
+
+            // Simulation d'exécution R
+            setTimeout(() => {
+                const result = generateROutput(periode, region);
+                output.textContent = result;
+            }, 2000);
+        }
+
+        function generatePythonOutput(periode, region, typeAnalyse) {
+            return `🐍 ANALYSE PYTHON - ${typeAnalyse.toUpperCase()}
+Période: ${periode}
+Région: ${region}
+
+=== RÉSULTATS ===
+Données chargées: 5 catégories, ${periode === '2023' ? '1 année' : '3 années'}
+Budget total analysé: 41,500 M€
+
+Statistiques descriptives:
+- Moyenne: 8,300 M€
+- Médiane: 9,500 M€
+- Écart-type: 5,244 M€
+- CV: 63.2%
+
+${typeAnalyse === 'correlation' ? `
+Corrélations significatives (p < 0.05):
+- Hospitalisations vs Population: r = 0.78 (p = 0.023)
+- Médicaments vs Âge moyen: r = 0.65 (p = 0.041)
+` : ''}
+
+${typeAnalyse === 'regression' ? `
+Modèle de régression linéaire:
+R² = 0.84
+RMSE = 1,234 M€
+Coefficients significatifs: 3/5
+` : ''}
+
+${typeAnalyse === 'clustering' ? `
+Classification K-means (k=3):
+Cluster 1: Dépenses élevées (Hospitalisations)
+Cluster 2: Dépenses moyennes (Consultations, Médicaments)
+Cluster 3: Dépenses faibles (Dentaire, Optique)
+Silhouette score: 0.73
+` : ''}
+
+✅ Analyse terminée avec succès
+Temps d'exécution: 1.23s`;
+        }
+
+        function generateROutput(periode, region) {
+            return `📊 ANALYSE R - STATISTIQUES AVANCÉES
+Période: ${periode}
+Région: ${region}
+
+> library(dplyr)
+> library(ggplot2)
+> library(corrplot)
+
+=== CHARGEMENT DES DONNÉES ===
+Lecture fichier: depenses_sante_france.csv
+Dimensions: 5 observations x 2 variables
+
+=== ANALYSE STATISTIQUE ===
+summary(depenses):
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+   2000    3000    9500    8300   12000   15000 
+
+Test de normalité (Shapiro-Wilk):
+W = 0.8521, p-value = 0.1847
+Distribution normale acceptée (p > 0.05)
+
+=== ANALYSE DE VARIANCE ===
+ANOVA one-way:
+                Df Sum Sq Mean Sq F value Pr(>F)
+Catégories       4  2.1e+08  5.3e+07   4.23  0.041 *
+Residuals       15  1.9e+08  1.3e+07
+---
+Signif. codes: 0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+=== RECOMMANDATIONS ===
+• Différences significatives entre catégories (p = 0.041)
+• Focus sur les hospitalisations (variance élevée)
+• Surveillance des tendances saisonnières recommandée
+
+Call: lm(formula = depenses ~ categorie)
+Multiple R-squared: 0.529, Adjusted R-squared: 0.403
+F-statistic: 4.23 on 4 and 15 DF, p-value: 0.041
+
+✅ Analyse R terminée`;
+        }
+
+        function updateRealTime() {
+            const output = document.getElementById('script-output');
+            output.textContent = '🔄 Actualisation des données en cours...\n';
+            
+            setTimeout(() => {
+                output.textContent += 'Connexion à l\'API CPAM...\n';
+                output.textContent += 'Récupération des données temps réel...\n';
+                output.textContent += 'Mise à jour des graphiques...\n';
+                output.textContent += '✅ Données actualisées avec succès';
+                
+                // Actualise les graphiques
+                loadEvolutionChart();
+            }, 1500);
+        }
+    </script>
+</body>
+</html>

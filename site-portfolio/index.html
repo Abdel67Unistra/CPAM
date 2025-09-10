@@ -3,19 +3,92 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Portfolio Data Analyse</title>
-    <link rel="stylesheet" href="style.css">
+    <title>CPAM Analytics - Accueil</title>
+    <link rel="stylesheet" href="assets/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 </head>
 <body>
-    <header>
-        <h1>Portfolio Data Analyse</h1>
-                <li><a href="#basique">Niveau Basique</a></li>
-                <li><a href="#projets">Tous les Projets</a></li>
-                <!-- Autres rubriques à ajouter ici -->
-                <li><a href="#basique">Niveau Basique</a></li>
+    <nav class="navbar">
+        <div class="nav-container">
+            <h1 class="nav-logo">CPAM Analytics</h1>
+            <ul class="nav-menu">
+                <li><a href="index.html" class="nav-link active">Accueil</a></li>
+                <li><a href="depenses.html" class="nav-link">Dépenses Santé</a></li>
+                <li><a href="actes.html" class="nav-link">Actes Médicaux</a></li>
+                <li><a href="prevision.html" class="nav-link">Prévisions</a></li>
+                <li><a href="fraudes.html" class="nav-link">Détection Fraudes</a></li>
+                <li><a href="api.html" class="nav-link">API Analytics</a></li>
+            </ul>
+        </div>
+    </nav>
 
-                <!-- Autres rubriques à ajouter ici -->
-            <h2>Tous les projets de Data Analyse Statistique</h2>
+    <main class="main-content">
+        <section class="hero">
+            <h1>Plateforme d'Analyse en Temps Réel</h1>
+            <p>Analysez les données de santé avec des scripts R/Python interactifs</p>
+            
+            <div class="dashboard-grid">
+                <div class="card">
+                    <h3>🏥 Dépenses Santé</h3>
+                    <div style="height: 150px;">
+                        <canvas id="mini-chart-depenses"></canvas>
+                    </div>
+                    <a href="depenses.html" class="btn">Analyser</a>
+                </div>
+                
+                <div class="card">
+                    <h3>⚕️ Actes Médicaux</h3>
+                    <div style="height: 150px;">
+                        <canvas id="mini-chart-actes"></canvas>
+                    </div>
+                    <a href="actes.html" class="btn">Explorer</a>
+                </div>
+                
+                <div class="card">
+                    <h3>📈 Prévisions</h3>
+                    <div style="height: 150px;">
+                        <canvas id="mini-chart-prevision"></canvas>
+                    </div>
+                    <a href="prevision.html" class="btn">Prédire</a>
+                </div>
+                
+                <div class="card">
+                    <h3>🔍 Détection Fraudes</h3>
+                    <div style="height: 150px;">
+                        <canvas id="mini-chart-fraudes"></canvas>
+                    </div>
+                    <a href="fraudes.html" class="btn">Détecter</a>
+                </div>
+            </div>
+        </section>
+
+        <section class="real-time-section">
+            <h2>Données en Temps Réel</h2>
+            <div class="real-time-stats">
+                <div class="stat-item">
+                    <span class="stat-number" id="stat-budget">--</span>
+                    <span class="stat-label">Budget Total (M€)</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number" id="stat-actes">--</span>
+                    <span class="stat-label">Actes Traités</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number" id="stat-fraudes">--</span>
+                    <span class="stat-label">Fraudes Détectées</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number" id="stat-delai">--</span>
+                    <span class="stat-label">Délai Moyen (jours)</span>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script src="assets/main.js"></script>
+</body>
+</html>
             <table style="width:100%;border-collapse:collapse;margin-top:1em;">
                 <thead style="background:#eee;">
                     <tr>
