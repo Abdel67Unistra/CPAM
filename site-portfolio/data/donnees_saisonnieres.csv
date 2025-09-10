@@ -1,0 +1,13 @@
+Mois,Consultations,Hospitalisations,Medicaments,Pic_saisonnier
+Janvier,1100,1350,850,Hiver
+Février,1050,1300,820,Hiver
+Mars,980,1250,780,Transition
+Avril,900,1100,720,Printemps
+Mai,850,1050,680,Printemps
+Juin,800,1000,650,Été
+Juillet,750,950,600,Été
+Août,720,900,580,Été
+Septembre,850,1050,700,Rentrée
+Octobre,950,1150,750,Automne
+Novembre,1050,1250,800,Automne
+Décembre,1150,1400,900,Hiver

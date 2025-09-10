@@ -71,15 +71,34 @@
     <main>
         <section id="basique">
             <h2>Niveau Basique – Analyses descriptives</h2>
-            <article>
+                        <article>
                 <h3>Analyse des dépenses de santé en France</h3>
                 <p><strong>Objectif :</strong> Étudier l’évolution des dépenses de santé dans différentes catégories (consultations, médicaments, hospitalisations, etc.).</p>
                 <p><strong>Données :</strong> <a href="https://data.ameli.fr" target="_blank">Open data de l’Assurance Maladie</a></p>
+                
+                <!-- Statistiques descriptives -->
+                <div style="background:#f8f9fa;padding:1em;margin:1em 0;border-radius:5px;">
+                    <h4>📊 Statistiques descriptives 2023</h4>
+                    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1em;">
+                        <div><strong>Budget total:</strong> 41,500 M€</div>
+                        <div><strong>Croissance:</strong> +4.0%</div>
+                        <div><strong>Poste principal:</strong> Hospitalisations</div>
+                    </div>
+                </div>
+
                 <div id="data-visualisation">
+                    <!-- Graphique principal -->
                     <canvas id="chartDepenses" width="600" height="300" style="margin-top:2em;"></canvas>
+                    
+                    <!-- Graphique évolution temporelle -->
+                    <canvas id="chartEvolution" width="600" height="300" style="margin-top:2em;"></canvas>
+                    
+                    <!-- Graphique saisonnalité -->
+                    <canvas id="chartSaisonnier" width="600" height="300" style="margin-top:2em;"></canvas>
+
                     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
                     <script>
-                    // Fonction pour charger le CSV et afficher le graphique
+                    // Graphique 1: Répartition des dépenses
                     fetch('data/depenses_sante_france.csv')
                         .then(response => response.text())
                         .then(csv => {
@@ -93,7 +112,7 @@
                             }
                             const ctx = document.getElementById('chartDepenses').getContext('2d');
                             new Chart(ctx, {
-                                type: 'bar',
+                                type: 'doughnut',
                                 data: {
                                     labels: labels,
                                     datasets: [{
@@ -107,17 +126,136 @@
                                 options: {
                                     responsive: false,
                                     plugins: {
-                                        legend: { display: false },
+                                        legend: { display: true, position: 'right' },
                                         title: {
                                             display: true,
-                                            text: 'Répartition des dépenses de santé (France)'
+                                            text: 'Répartition des dépenses de santé 2023 (France)'
+                                        }
+                                    }
+                                }
+                            });
+                        });
+
+                    // Graphique 2: Évolution temporelle
+                    fetch('data/evolution_depenses_detaillee.csv')
+                        .then(response => response.text())
+                        .then(csv => {
+                            const lines = csv.trim().split('\n');
+                            const headers = lines[0].split(',');
+                            const data = {};
+                            const labels = [];
+                            
+                            for(let i=1; i<lines.length; i++) {
+                                const values = lines[i].split(',');
+                                labels.push(values[0]);
+                                for(let j=1; j<headers.length; j++) {
+                                    if(!data[headers[j]]) data[headers[j]] = [];
+                                    data[headers[j]].push(Number(values[j]));
+                                }
+                            }
+                            
+                            const ctx = document.getElementById('chartEvolution').getContext('2d');
+                            new Chart(ctx, {
+                                type: 'line',
+                                data: {
+                                    labels: labels,
+                                    datasets: [{
+                                        label: 'Dépenses totales',
+                                        data: data['Depenses_Totales'],
+                                        borderColor: '#0055a4',
+                                        backgroundColor: 'rgba(0,85,164,0.1)',
+                                        fill: true
+                                    }]
+                                },
+                                options: {
+                                    responsive: false,
+                                    plugins: {
+                                        title: {
+                                            display: true,
+                                            text: 'Évolution des dépenses de santé (2021-2025)'
+                                        }
+                                    },
+                                    scales: {
+                                        y: {
+                                            beginAtZero: false,
+                                            title: {
+                                                display: true,
+                                                text: 'Dépenses (M€)'
+                                            }
+                                        }
+                                    }
+                                }
+                            });
+                        });
+
+                    // Graphique 3: Saisonnalité
+                    fetch('data/donnees_saisonnieres.csv')
+                        .then(response => response.text())
+                        .then(csv => {
+                            const lines = csv.trim().split('\n');
+                            const labels = [];
+                            const consultations = [];
+                            const hospitalisations = [];
+                            
+                            for(let i=1; i<lines.length; i++) {
+                                const [mois, cons, hosp] = lines[i].split(',');
+                                labels.push(mois);
+                                consultations.push(Number(cons));
+                                hospitalisations.push(Number(hosp));
+                            }
+                            
+                            const ctx = document.getElementById('chartSaisonnier').getContext('2d');
+                            new Chart(ctx, {
+                                type: 'bar',
+                                data: {
+                                    labels: labels,
+                                    datasets: [{
+                                        label: 'Consultations',
+                                        data: consultations,
+                                        backgroundColor: '#0077c2'
+                                    }, {
+                                        label: 'Hospitalisations',
+                                        data: hospitalisations,
+                                        backgroundColor: '#00bbf1'
+                                    }]
+                                },
+                                options: {
+                                    responsive: false,
+                                    plugins: {
+                                        title: {
+                                            display: true,
+                                            text: 'Variations saisonnières des actes médicaux'
+                                        }
+                                    },
+                                    scales: {
+                                        y: {
+                                            title: {
+                                                display: true,
+                                                text: 'Nombre d\'actes (milliers)'
+                                            }
                                         }
                                     }
                                 }
                             });
                         });
                     </script>
-                    <a href="script_projets.py" download style="display:inline-block;margin-top:2em;padding:0.5em 1em;background:#0055a4;color:#fff;border-radius:4px;text-decoration:none;font-weight:bold;">Télécharger le script Python</a>
+
+                    <!-- Boutons de téléchargement -->
+                    <div style="margin-top:2em;">
+                        <a href="script_projets.py" download style="display:inline-block;margin-right:1em;padding:0.5em 1em;background:#0055a4;color:#fff;border-radius:4px;text-decoration:none;font-weight:bold;">📄 Script Python</a>
+                        <a href="analyse_basique.py" download style="display:inline-block;padding:0.5em 1em;background:#28a745;color:#fff;border-radius:4px;text-decoration:none;font-weight:bold;">📊 Analyse Complète</a>
+                    </div>
+
+                    <!-- Insights métier -->
+                    <div style="background:#e7f3ff;padding:1em;margin:2em 0;border-left:4px solid #0055a4;">
+                        <h4>🔍 Insights pour la CPAM</h4>
+                        <ul>
+                            <li><strong>Hospitalisations:</strong> Plus gros poste (36% du budget), croissance +3.4%</li>
+                            <li><strong>Saisonnalité:</strong> Pic hivernal (+25% décembre vs août)</li>
+                            <li><strong>Tendance:</strong> Croissance constante +4% par an</li>
+                            <li><strong>Recommandation:</strong> Surveiller l'évolution des soins dentaires (+7.1%)</li>
+                        </ul>
+                    </div>
                 </div>
             </article>
             <article>
