@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portfolio Data Analyse</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>Portfolio Data Analyse</h1>
+                <li><a href="#basique">Niveau Basique</a></li>
+                <li><a href="#projets">Tous les Projets</a></li>
+                <!-- Autres rubriques à ajouter ici -->
+                <li><a href="#basique">Niveau Basique</a></li>
+
+                <!-- Autres rubriques à ajouter ici -->
+            <h2>Tous les projets de Data Analyse Statistique</h2>
+            <table style="width:100%;border-collapse:collapse;margin-top:1em;">
+                <thead style="background:#eee;">
+                    <tr>
+                        <th style="border:1px solid #ccc;padding:8px;">Niveau</th>
+                        <th style="border:1px solid #ccc;padding:8px;">Nom</th>
+                        <th style="border:1px solid #ccc;padding:8px;">Objectif</th>
+                        <th style="border:1px solid #ccc;padding:8px;">Outils</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td style="border:1px solid #ccc;padding:8px;">Basique</td>
+                        <td style="border:1px solid #ccc;padding:8px;">Analyse des dépenses de santé</td>
+                        <td style="border:1px solid #ccc;padding:8px;">Étudier l’évolution des dépenses de santé par région, catégorie et temps</td>
+                        <td style="border:1px solid #ccc;padding:8px;">Python, Tableau, Power BI</td>
+                    </tr>
+                    <tr>
+                        <td style="border:1px solid #ccc;padding:8px;">Basique</td>
+                        <td style="border:1px solid #ccc;padding:8px;">Répartition des actes médicaux par spécialité</td>
+                        <td style="border:1px solid #ccc;padding:8px;">Comprendre la distribution des actes médicaux par spécialité et région, identifier les pics saisonniers</td>
+                        <td style="border:1px solid #ccc;padding:8px;">Python, Power BI</td>
+                    </tr>
+                    <tr>
+                        <td style="border:1px solid #ccc;padding:8px;">Intermédiaire</td>
+                        <td style="border:1px solid #ccc;padding:8px;">Prévision des dépenses médicales</td>
+                        <td style="border:1px solid #ccc;padding:8px;">Anticiper les coûts futurs des remboursements pour aider à la planification budgétaire</td>
+                        <td style="border:1px solid #ccc;padding:8px;">Python (ARIMA, Prophet), Tableau</td>
+                    </tr>
+                    <tr>
+                        <td style="border:1px solid #ccc;padding:8px;">Intermédiaire</td>
+                        <td style="border:1px solid #ccc;padding:8px;">Détection de fraudes potentielles</td>
+                        <td style="border:1px solid #ccc;padding:8px;">Identifier des comportements atypiques ou anomalies dans les remboursements pour détecter des fraudes</td>
+                        <td style="border:1px solid #ccc;padding:8px;">Python (Isolation Forest, DBSCAN)</td>
+                    </tr>
+                    <tr>
+                        <td style="border:1px solid #ccc;padding:8px;">Avancé</td>
+                        <td style="border:1px solid #ccc;padding:8px;">Étude de la consommation de médicaments</td>
+                        <td style="border:1px solid #ccc;padding:8px;">Identifier les tendances de consommation, détecter surconsommations et corréler avec les campagnes de prévention</td>
+                        <td style="border:1px solid #ccc;padding:8px;">Python, Tableau</td>
+                    </tr>
+                    <tr>
+                        <td style="border:1px solid #ccc;padding:8px;">Avancé</td>
+                        <td style="border:1px solid #ccc;padding:8px;">Optimisation des délais de traitement des dossiers</td>
+                        <td style="border:1px solid #ccc;padding:8px;">Réduire les délais de traitement des dossiers de remboursement, analyser les étapes ralentissant le processus</td>
+                        <td style="border:1px solid #ccc;padding:8px;">Python (Kaplan-Meier), Power BI</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        <section id="basique">
+            <h2>Niveau Basique – Analyses descriptives</h2>
+            <article>
+                <h3>Analyse des dépenses de santé en France</h3>
+                <p><strong>Objectif :</strong> Étudier l’évolution des dépenses de santé dans différentes catégories (consultations, médicaments, hospitalisations, etc.).</p>
+                <p><strong>Données :</strong> <a href="https://data.ameli.fr" target="_blank">Open data de l’Assurance Maladie</a></p>
+                <div id="data-visualisation">
+                    <canvas id="chartDepenses" width="600" height="300" style="margin-top:2em;"></canvas>
+                    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+                    <script>
+                    // Fonction pour charger le CSV et afficher le graphique
+                    fetch('data/depenses_sante_france.csv')
+                        .then(response => response.text())
+                        .then(csv => {
+                            const lines = csv.trim().split('\n');
+                            const labels = [];
+                            const data = [];
+                            for(let i=1; i<lines.length; i++) {
+                                const [cat, val] = lines[i].split(',');
+                                labels.push(cat);
+                                data.push(Number(val));
+                            }
+                            const ctx = document.getElementById('chartDepenses').getContext('2d');
+                            new Chart(ctx, {
+                                type: 'bar',
+                                data: {
+                                    labels: labels,
+                                    datasets: [{
+                                        label: 'Dépenses de santé (M€)',
+                                        data: data,
+                                        backgroundColor: [
+                                            '#0055a4', '#0077c2', '#0099e5', '#00bbf1', '#00ddff'
+                                        ]
+                                    }]
+                                },
+                                options: {
+                                    responsive: false,
+                                    plugins: {
+                                        legend: { display: false },
+                                        title: {
+                                            display: true,
+                                            text: 'Répartition des dépenses de santé (France)'
+                                        }
+                                    }
+                                }
+                            });
+                        });
+                    </script>
+                    <a href="script_projets.py" download style="display:inline-block;margin-top:2em;padding:0.5em 1em;background:#0055a4;color:#fff;border-radius:4px;text-decoration:none;font-weight:bold;">Télécharger le script Python</a>
+                </div>
+            </article>
+            <article>
+                <h3>Prévision des dépenses médicales</h3>
+                <p><strong>Objectif :</strong> Anticiper les coûts futurs des remboursements pour aider à la planification budgétaire.</p>
+                <p><strong>Données :</strong> <a href="https://data.ameli.fr" target="_blank">Open data de l’Assurance Maladie</a></p>
+                <div id="prevision-visualisation">
+                    <canvas id="chartPrevision" width="600" height="300" style="margin-top:2em;"></canvas>
+                    <script>
+                    fetch('data/prevision_depenses.csv')
+                        .then(response => response.text())
+                        .then(csv => {
+                            const lines = csv.trim().split('\n');
+                            const labels = [];
+                            const data = [];
+                            for(let i=1; i<lines.length; i++) {
+                                const [annee, val] = lines[i].split(',');
+                                labels.push(annee);
+                                data.push(Number(val));
+                            }
+                            const ctx = document.getElementById('chartPrevision').getContext('2d');
+                            new Chart(ctx, {
+                                type: 'line',
+                                data: {
+                                    labels: labels,
+                                    datasets: [{
+                                        label: 'Prévision des dépenses (M€)',
+                                        data: data,
+                                        borderColor: '#0055a4',
+                                        backgroundColor: 'rgba(0,85,164,0.1)',
+                                        fill: true
+                                    }]
+                                },
+                                options: {
+                                    responsive: false,
+                                    plugins: {
+                                        legend: { display: true },
+                                        title: {
+                                            display: true,
+                                            text: 'Prévision des dépenses médicales (France)'
+                                        }
+                                    }
+                                }
+                            });
+                        });
+                    </script>
+                </div>
+            </article>
+            <article>
+                <h3>Détection de fraudes potentielles</h3>
+                <p><strong>Objectif :</strong> Identifier des comportements atypiques ou anomalies dans les remboursements pour détecter des fraudes.</p>
+                <p><strong>Données :</strong> <a href="https://data.ameli.fr" target="_blank">Open data de l’Assurance Maladie</a></p>
+                <div id="fraudes-visualisation">
+                    <canvas id="chartFraudes" width="600" height="300" style="margin-top:2em;"></canvas>
+                    <script>
+                    fetch('data/fraudes_potentielles.csv')
+                        .then(response => response.text())
+                        .then(csv => {
+                            const lines = csv.trim().split('\n');
+                            const labels = [];
+                            const data = [];
+                            for(let i=1; i<lines.length; i++) {
+                                const [type, val] = lines[i].split(',');
+                                labels.push(type);
+                                data.push(Number(val));
+                            }
+                            const ctx = document.getElementById('chartFraudes').getContext('2d');
+                            new Chart(ctx, {
+                                type: 'doughnut',
+                                data: {
+                                    labels: labels,
+                                    datasets: [{
+                                        label: 'Nombre de cas',
+                                        data: data,
+                                        backgroundColor: [
+                                            '#e74c3c', '#f39c12', '#8e44ad'
+                                        ]
+                                    }]
+                                },
+                                options: {
+                                    responsive: false,
+                                    plugins: {
+                                        legend: { display: true },
+                                        title: {
+                                            display: true,
+                                            text: 'Détection de fraudes potentielles'
+                                        }
+                                    }
+                                }
+                            });
+                        });
+                    </script>
+                </div>
+            </article>
+            <article>
+                <h3>Étude de la consommation de médicaments</h3>
+                <p><strong>Objectif :</strong> Identifier les tendances de consommation, détecter surconsommations et corréler avec les campagnes de prévention.</p>
+                <p><strong>Données :</strong> <a href="https://data.ameli.fr" target="_blank">Open data de l’Assurance Maladie</a></p>
+                <div id="medicaments-visualisation">
+                    <canvas id="chartMedicaments" width="600" height="300" style="margin-top:2em;"></canvas>
+                    <script>
+                    fetch('data/consommation_medicaments.csv')
+                        .then(response => response.text())
+                        .then(csv => {
+                            const lines = csv.trim().split('\n');
+                            const labels = [];
+                            const data = [];
+                            for(let i=1; i<lines.length; i++) {
+                                const [med, val] = lines[i].split(',');
+                                labels.push(med);
+                                data.push(Number(val));
+                            }
+                            const ctx = document.getElementById('chartMedicaments').getContext('2d');
+                            new Chart(ctx, {
+                                type: 'bar',
+                                data: {
+                                    labels: labels,
+                                    datasets: [{
+                                        label: 'Consommation (millions)',
+                                        data: data,
+                                        backgroundColor: [
+                                            '#27ae60', '#2980b9', '#f1c40f', '#e67e22'
+                                        ]
+                                    }]
+                                },
+                                options: {
+                                    responsive: false,
+                                    plugins: {
+                                        legend: { display: false },
+                                        title: {
+                                            display: true,
+                                            text: 'Consommation de médicaments en France'
+                                        }
+                                    }
+                                }
+                            });
+                        });
+                    </script>
+                </div>
+            </article>
+            <article>
+                <h3>Optimisation des délais de traitement des dossiers</h3>
+                <p><strong>Objectif :</strong> Réduire les délais de traitement des dossiers de remboursement, analyser les étapes ralentissant le processus.</p>
+                <p><strong>Données :</strong> <a href="https://data.ameli.fr" target="_blank">Open data de l’Assurance Maladie</a></p>
+                <div id="delais-visualisation">
+                    <canvas id="chartDelais" width="600" height="300" style="margin-top:2em;"></canvas>
+                    <script>
+                    fetch('data/delais_traitement.csv')
+                        .then(response => response.text())
+                        .then(csv => {
+                            const lines = csv.trim().split('\n');
+                            const labels = [];
+                            const data = [];
+                            for(let i=1; i<lines.length; i++) {
+                                const [mois, val] = lines[i].split(',');
+                                labels.push(mois);
+                                data.push(Number(val));
+                            }
+                            const ctx = document.getElementById('chartDelais').getContext('2d');
+                            new Chart(ctx, {
+                                type: 'line',
+                                data: {
+                                    labels: labels,
+                                    datasets: [{
+                                        label: 'Délai moyen (jours)',
+                                        data: data,
+                                        borderColor: '#e67e22',
+                                        backgroundColor: 'rgba(230,126,34,0.1)',
+                                        fill: true
+                                    }]
+                                },
+                                options: {
+                                    responsive: false,
+                                    plugins: {
+                                        legend: { display: true },
+                                        title: {
+                                            display: true,
+                                            text: 'Optimisation des délais de traitement des dossiers'
+                                        }
+                                    }
+                                }
+                            });
+                        });
+                    </script>
+                </div>
+            </article>
+            <article>
+                <h3>Répartition des actes médicaux par spécialité</h3>
+                <p><strong>Objectif :</strong> Comprendre la distribution des actes médicaux par spécialité et région, identifier les pics saisonniers.</p>
+                <p><strong>Données :</strong> <a href="https://data.ameli.fr" target="_blank">Open data de l’Assurance Maladie</a></p>
+                <div id="actes-visualisation">
+                    <canvas id="chartActes" width="600" height="300" style="margin-top:2em;"></canvas>
+                    <script>
+                    fetch('data/actes_medicaux_specialite.csv')
+                        .then(response => response.text())
+                        .then(csv => {
+                            const lines = csv.trim().split('\n');
+                            const labels = [];
+                            const data = [];
+                            for(let i=1; i<lines.length; i++) {
+                                const [spec, val] = lines[i].split(',');
+                                labels.push(spec);
+                                data.push(Number(val));
+                            }
+                            const ctx = document.getElementById('chartActes').getContext('2d');
+                            new Chart(ctx, {
+                                type: 'pie',
+                                data: {
+                                    labels: labels,
+                                    datasets: [{
+                                        label: 'Nombre d’actes',
+                                        data: data,
+                                        backgroundColor: [
+                                            '#0055a4', '#0077c2', '#0099e5', '#00bbf1', '#00ddff'
+                                        ]
+                                    }]
+                                },
+                                options: {
+                                    responsive: false,
+                                    plugins: {
+                                        legend: { display: true },
+                                        title: {
+                                            display: true,
+                                            text: 'Répartition des actes médicaux par spécialité'
+                                        }
+                                    }
+                                }
+                            });
+                        });
+                    </script>
+                </div>
+            </article>
+        </section>
+    </main>
+    <footer>
+        <p>© 2025 Portfolio Data Analyse</p>
+    </footer>
+</body>
+</html>
