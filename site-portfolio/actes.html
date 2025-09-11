@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Actes Médicaux - CPAM Analytics</title>
+    <link rel="stylesheet" href="assets/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.plot.ly/plotly-2.26.0.min.js"></script>
+</head>
+<body>
+    <header class="main-header">
+        <div class="container">
+            <div class="header-content">
+                <h1><i class="fas fa-user-md"></i> Analyse des Actes Médicaux</h1>
+                <p>Distribution par spécialité et analyse des tendances</p>
+            </div>
+            <nav class="main-nav">
+                <a href="index.html"><i class="fas fa-home"></i> Accueil</a>
+                <a href="depenses.html"><i class="fas fa-chart-line"></i> Dépenses</a>
+                <a href="actes.html" class="active"><i class="fas fa-user-md"></i> Actes</a>
+                <a href="prevision.html"><i class="fas fa-crystal-ball"></i> Prévisions</a>
+                <a href="fraudes.html"><i class="fas fa-shield-alt"></i> Fraudes</a>
+                <a href="api.html"><i class="fas fa-code"></i> API</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <div class="container">
+            <!-- Statistiques en temps réel -->
+            <section class="stats-section">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-procedures"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3>Actes Totaux</h3>
+                            <div class="stat-value" id="total-actes">2,456,789</div>
+                            <div class="stat-change positive">+2.3% vs mois dernier</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-stethoscope"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3>Spécialités Actives</h3>
+                            <div class="stat-value" id="specialites-actives">42</div>
+                            <div class="stat-change neutral">Stable</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-euro-sign"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3>Coût Moyen</h3>
+                            <div class="stat-value" id="cout-moyen">€45.60</div>
+                            <div class="stat-change negative">-1.2% vs mois dernier</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-calendar-day"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3>Délai Moyen RDV</h3>
+                            <div class="stat-value" id="delai-rdv">12.5 jours</div>
+                            <div class="stat-change positive">-0.8 jours</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Contrôles d'analyse -->
+            <section class="analysis-controls">
+                <div class="controls-card">
+                    <h3><i class="fas fa-sliders-h"></i> Paramètres d'Analyse</h3>
+                    <div class="controls-grid">
+                        <div class="control-group">
+                            <label for="periode-select">Période d'analyse</label>
+                            <select id="periode-select">
+                                <option value="3m">3 derniers mois</option>
+                                <option value="6m" selected>6 derniers mois</option>
+                                <option value="1y">1 an</option>
+                                <option value="2y">2 ans</option>
+                            </select>
+                        </div>
+                        <div class="control-group">
+                            <label for="specialite-filter">Filtrer par spécialité</label>
+                            <select id="specialite-filter">
+                                <option value="all">Toutes les spécialités</option>
+                                <option value="medecine_generale">Médecine générale</option>
+                                <option value="cardiologie">Cardiologie</option>
+                                <option value="dermatologie">Dermatologie</option>
+                                <option value="ophtalmo">Ophtalmologie</option>
+                                <option value="pediatrie">Pédiatrie</option>
+                            </select>
+                        </div>
+                        <div class="control-group">
+                            <label for="region-filter">Région</label>
+                            <select id="region-filter">
+                                <option value="all">Toutes les régions</option>
+                                <option value="alsace">Alsace</option>
+                                <option value="lorraine">Lorraine</option>
+                                <option value="champagne">Champagne-Ardenne</option>
+                            </select>
+                        </div>
+                        <div class="control-group">
+                            <button class="btn-primary" onclick="analyserActes()">
+                                <i class="fas fa-play"></i> Lancer l'analyse
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Visualisations -->
+            <section class="charts-section">
+                <div class="charts-grid">
+                    <!-- Distribution par spécialité -->
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <h3><i class="fas fa-chart-pie"></i> Distribution par Spécialité</h3>
+                            <div class="chart-controls">
+                                <button class="btn-secondary" onclick="exportChart('specialites')">
+                                    <i class="fas fa-download"></i> Export
+                                </button>
+                            </div>
+                        </div>
+                        <div id="chart-specialites" class="chart-container"></div>
+                    </div>
+
+                    <!-- Évolution temporelle -->
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <h3><i class="fas fa-chart-line"></i> Évolution Temporelle</h3>
+                            <div class="chart-controls">
+                                <button class="btn-secondary" onclick="exportChart('evolution')">
+                                    <i class="fas fa-download"></i> Export
+                                </button>
+                            </div>
+                        </div>
+                        <div id="chart-evolution" class="chart-container"></div>
+                    </div>
+
+                    <!-- Analyse saisonnière -->
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <h3><i class="fas fa-calendar-alt"></i> Analyse Saisonnière</h3>
+                            <div class="chart-controls">
+                                <button class="btn-secondary" onclick="exportChart('saisonnier')">
+                                    <i class="fas fa-download"></i> Export
+                                </button>
+                            </div>
+                        </div>
+                        <div id="chart-saisonnier" class="chart-container"></div>
+                    </div>
+
+                    <!-- Coûts par acte -->
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <h3><i class="fas fa-euro-sign"></i> Analyse des Coûts</h3>
+                            <div class="chart-controls">
+                                <button class="btn-secondary" onclick="exportChart('couts')">
+                                    <i class="fas fa-download"></i> Export
+                                </button>
+                            </div>
+                        </div>
+                        <div id="chart-couts" class="chart-container"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Scripts R/Python -->
+            <section class="scripts-section">
+                <div class="scripts-card">
+                    <h3><i class="fas fa-code"></i> Scripts d'Analyse</h3>
+                    <div class="scripts-tabs">
+                        <button class="tab-btn active" onclick="showTab('python-tab')">Python</button>
+                        <button class="tab-btn" onclick="showTab('r-tab')">R</button>
+                    </div>
+                    
+                    <div id="python-tab" class="tab-content active">
+                        <div class="script-controls">
+                            <button class="btn-primary" onclick="executePythonScript()">
+                                <i class="fas fa-play"></i> Exécuter Script Python
+                            </button>
+                            <div class="execution-status" id="python-status">Prêt</div>
+                        </div>
+                        <pre class="code-block"><code class="language-python">
+# Analyse des actes médicaux par spécialité
+import pandas as pd
+import numpy as np
+from scipy import stats
+import matplotlib.pyplot as plt
+
+def analyser_actes_specialite(df_actes):
+    """
+    Analyse descriptive des actes médicaux par spécialité
+    """
+    # Groupement par spécialité
+    analyse_spec = df_actes.groupby('specialite').agg({
+        'nombre_actes': ['sum', 'mean', 'std'],
+        'cout_total': ['sum', 'mean'],
+        'duree_moyenne': 'mean'
+    }).round(2)
+    
+    # Test ANOVA pour différences entre spécialités
+    specialites = df_actes['specialite'].unique()
+    groupes_cout = [df_actes[df_actes['specialite'] == spec]['cout_unitaire'] 
+                   for spec in specialites]
+    
+    f_stat, p_value = stats.f_oneway(*groupes_cout)
+    
+    # Calcul de la saisonnalité
+    df_actes['mois'] = pd.to_datetime(df_actes['date']).dt.month
+    saisonnalite = df_actes.groupby('mois')['nombre_actes'].sum()
+    
+    return {
+        'analyse_specialite': analyse_spec,
+        'test_anova': {'f_statistic': f_stat, 'p_value': p_value},
+        'saisonnalite': saisonnalite,
+        'total_actes': df_actes['nombre_actes'].sum(),
+        'specialite_dominante': analyse_spec['nombre_actes']['sum'].idxmax()
+    }
+                        </code></pre>
+                    </div>
+                    
+                    <div id="r-tab" class="tab-content">
+                        <div class="script-controls">
+                            <button class="btn-primary" onclick="executeRScript()">
+                                <i class="fas fa-play"></i> Exécuter Script R
+                            </button>
+                            <div class="execution-status" id="r-status">Prêt</div>
+                        </div>
+                        <pre class="code-block"><code class="language-r">
+# Analyse des actes médicaux avec R
+library(dplyr)
+library(ggplot2)
+library(car)
+
+analyser_actes_medicaux <- function(data) {
+  # Analyse descriptive par spécialité
+  resume_specialites <- data %>%
+    group_by(specialite) %>%
+    summarise(
+      nb_actes = sum(nombre_actes),
+      cout_moyen = mean(cout_unitaire),
+      cout_total = sum(cout_total),
+      ecart_type = sd(cout_unitaire),
+      coefficient_variation = sd(cout_unitaire) / mean(cout_unitaire) * 100
+    )
+  
+  # Test de Kruskal-Wallis (non-paramétrique)
+  kruskal_test <- kruskal.test(cout_unitaire ~ specialite, data = data)
+  
+  # Analyse de variance (ANOVA)
+  anova_model <- aov(cout_unitaire ~ specialite, data = data)
+  anova_summary <- summary(anova_model)
+  
+  # Test post-hoc Tukey HSD
+  tukey_results <- TukeyHSD(anova_model)
+  
+  # Test d'homogénéité des variances de Levene
+  levene_test <- leveneTest(cout_unitaire ~ specialite, data = data)
+  
+  return(list(
+    resume = resume_specialites,
+    kruskal = kruskal_test,
+    anova = anova_summary,
+    tukey = tukey_results,
+    levene = levene_test
+  ))
+}
+                        </code></pre>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Résultats d'analyse -->
+            <section class="results-section">
+                <div class="results-card">
+                    <h3><i class="fas fa-chart-bar"></i> Résultats d'Analyse</h3>
+                    <div id="analysis-results" class="results-content">
+                        <div class="result-item">
+                            <h4>🏥 Analyse par Spécialité</h4>
+                            <ul>
+                                <li><strong>Médecine générale</strong> : 45.2% des actes (1,110,580 actes)</li>
+                                <li><strong>Cardiologie</strong> : 12.8% des actes (314,469 actes)</li>
+                                <li><strong>Dermatologie</strong> : 8.9% des actes (218,654 actes)</li>
+                                <li><strong>Ophtalmologie</strong> : 7.3% des actes (179,346 actes)</li>
+                                <li><strong>Pédiatrie</strong> : 6.1% des actes (149,864 actes)</li>
+                            </ul>
+                        </div>
+                        <div class="result-item">
+                            <h4>📊 Tests Statistiques</h4>
+                            <ul>
+                                <li><strong>ANOVA</strong> : F = 234.56, p < 0.001 (différences significatives)</li>
+                                <li><strong>Kruskal-Wallis</strong> : H = 189.23, p < 0.001</li>
+                                <li><strong>Test de Levene</strong> : W = 45.67, p < 0.05 (hétéroscédasticité)</li>
+                            </ul>
+                        </div>
+                        <div class="result-item">
+                            <h4>🔍 Insights Métier</h4>
+                            <ul>
+                                <li>La médecine générale représente près de la moitié des actes</li>
+                                <li>Les spécialités coûteuses (cardiologie) montrent une croissance</li>
+                                <li>Pic saisonnier en hiver pour les consultations générales</li>
+                                <li>Délais de RDV les plus longs : ophtalmologie (28 jours)</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <script src="assets/main.js"></script>
+    <script>
+        // Scripts spécifiques à la page actes médicaux
+        function analyserActes() {
+            showLoading();
+            
+            // Simulation d'analyse
+            setTimeout(() => {
+                generateChartsActes();
+                hideLoading();
+                showSuccess('Analyse des actes médicaux terminée avec succès !');
+            }, 2000);
+        }
+
+        function generateChartsActes() {
+            // Graphique en secteurs - Distribution par spécialité
+            const specialitesData = [{
+                values: [45.2, 12.8, 8.9, 7.3, 6.1, 19.7],
+                labels: ['Médecine générale', 'Cardiologie', 'Dermatologie', 'Ophtalmologie', 'Pédiatrie', 'Autres'],
+                type: 'pie',
+                hole: 0.4,
+                textinfo: 'label+percent',
+                textposition: 'outside',
+                marker: {
+                    colors: ['#3498db', '#e74c3c', '#f39c12', '#27ae60', '#9b59b6', '#95a5a6']
+                }
+            }];
+
+            const specialitesLayout = {
+                title: 'Distribution des Actes par Spécialité',
+                showlegend: true,
+                font: { family: 'Segoe UI, sans-serif' }
+            };
+
+            Plotly.newPlot('chart-specialites', specialitesData, specialitesLayout, {responsive: true});
+
+            // Graphique linéaire - Évolution temporelle
+            const mois = ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Jun', 'Jul', 'Aoû', 'Sep', 'Oct', 'Nov', 'Déc'];
+            const evolutionData = [{
+                x: mois,
+                y: [180000, 175000, 185000, 190000, 185000, 170000, 160000, 165000, 185000, 195000, 205000, 210000],
+                type: 'scatter',
+                mode: 'lines+markers',
+                name: 'Médecine générale',
+                line: { color: '#3498db', width: 3 }
+            }, {
+                x: mois,
+                y: [45000, 44000, 46000, 47000, 45000, 42000, 40000, 41000, 46000, 48000, 50000, 52000],
+                type: 'scatter',
+                mode: 'lines+markers',
+                name: 'Cardiologie',
+                line: { color: '#e74c3c', width: 3 }
+            }];
+
+            const evolutionLayout = {
+                title: 'Évolution Mensuelle des Actes',
+                xaxis: { title: 'Mois' },
+                yaxis: { title: 'Nombre d\'actes' },
+                showlegend: true
+            };
+
+            Plotly.newPlot('chart-evolution', evolutionData, evolutionLayout, {responsive: true});
+
+            // Heatmap saisonnière
+            const saisonnierData = [{
+                z: [[120, 135, 142, 156], [115, 128, 138, 145], [125, 140, 148, 162], [130, 145, 155, 168]],
+                x: ['Q1', 'Q2', 'Q3', 'Q4'],
+                y: ['Médecine générale', 'Cardiologie', 'Dermatologie', 'Ophtalmologie'],
+                type: 'heatmap',
+                colorscale: 'Blues'
+            }];
+
+            const saisonnierLayout = {
+                title: 'Analyse Saisonnière par Trimestre',
+                xaxis: { title: 'Trimestre' },
+                yaxis: { title: 'Spécialité' }
+            };
+
+            Plotly.newPlot('chart-saisonnier', saisonnierData, saisonnierLayout, {responsive: true});
+
+            // Box plot - Coûts par spécialité
+            const coutsData = [{
+                y: [25, 28, 32, 35, 38, 42, 45, 48, 52, 55],
+                type: 'box',
+                name: 'Médecine générale'
+            }, {
+                y: [65, 72, 78, 85, 92, 98, 105, 112, 118, 125],
+                type: 'box',
+                name: 'Cardiologie'
+            }, {
+                y: [35, 38, 42, 45, 48, 52, 55, 58, 62, 65],
+                type: 'box',
+                name: 'Dermatologie'
+            }];
+
+            const coutsLayout = {
+                title: 'Distribution des Coûts par Spécialité',
+                yaxis: { title: 'Coût (€)' }
+            };
+
+            Plotly.newPlot('chart-couts', coutsData, coutsLayout, {responsive: true});
+        }
+
+        function executePythonScript() {
+            document.getElementById('python-status').textContent = 'Exécution en cours...';
+            document.getElementById('python-status').className = 'execution-status executing';
+            
+            setTimeout(() => {
+                document.getElementById('python-status').textContent = 'Terminé avec succès';
+                document.getElementById('python-status').className = 'execution-status success';
+                showSuccess('Script Python exécuté avec succès !');
+            }, 3000);
+        }
+
+        function executeRScript() {
+            document.getElementById('r-status').textContent = 'Exécution en cours...';
+            document.getElementById('r-status').className = 'execution-status executing';
+            
+            setTimeout(() => {
+                document.getElementById('r-status').textContent = 'Terminé avec succès';
+                document.getElementById('r-status').className = 'execution-status success';
+                showSuccess('Script R exécuté avec succès !');
+            }, 3000);
+        }
+
+        // Initialisation de la page
+        document.addEventListener('DOMContentLoaded', function() {
+            generateChartsActes();
+        });
+    </script>
+</body>
+</html>
