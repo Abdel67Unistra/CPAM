@@ -1,16 +1,22 @@
 # 🏥 CPAM Analytics - Plateforme d'Analyse en Temps Réel
 
+[![GitHub Pages](https://img.shields.io/badge/GitHub%20Pages-Live-green)](https://abdel67unistra.github.io/CPAM/site-portfolio/)
+[![Python](https://img.shields.io/badge/Python-3.9+-blue)](https://python.org)
+[![R](https://img.shields.io/badge/R-4.0+-orange)](https://r-project.org)
+[![JavaScript](https://img.shields.io/badge/JavaScript-ES6+-yellow)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
+
 ## 📋 Description du Projet
 
-**CPAM Analytics** est une plateforme web interactive développée pour la **Caisse Primaire d'Assurance Maladie (CPAM) de Strasbourg** permettant l'analyse en temps réel des données de santé avec intégration de scripts **Python** et **R**.
+**CPAM Analytics** est une plateforme web interactive avancée développée pour la **Caisse Primaire d'Assurance Maladie (CPAM) de Strasbourg**. Cette solution permet l'analyse en temps réel des données de santé avec intégration complète de scripts **Python** et **R**, offrant des capacités d'analyse statistique avancées et de machine learning.
 
 ### 🎯 Objectifs du Projet
 
-1. **Analyser les dépenses de santé** par catégorie, région et période
-2. **Détecter les fraudes potentielles** dans les remboursements
-3. **Prédire les tendances** de consommation médicale
-4. **Optimiser les délais** de traitement des dossiers
-5. **Fournir une interface interactive** pour les analystes CPAM
+1. **Analyser les dépenses de santé** par catégorie, région et période avec analyses statistiques avancées
+2. **Détecter les fraudes potentielles** dans les remboursements via machine learning
+3. **Prédire les tendances** de consommation médicale avec modèles temporels
+4. **Optimiser les délais** de traitement des dossiers par analyse de survie
+5. **Fournir une interface interactive** en temps réel pour les analystes CPAM
+6. **Intégrer des analyses R et Python** dans une interface web moderne
 
 ## 🚀 Fonctionnalités Principales
 
@@ -346,7 +352,7 @@ python -m http.server 8000
 
 ## 👥 Équipe & Contact
 
-**Développeur Principal** : [Votre Nom]  
+**Développeur Principal** : Cheriet Abdelmalek
 **Organisation** : CPAM Strasbourg  
 **Période** : Septembre 2025  
 **Technologies** : Python, R, JavaScript, HTML5/CSS3
@@ -355,9 +361,7 @@ python -m http.server 8000
 
 ## 📝 Licence & Utilisation
 
-Ce projet est développé dans le cadre d'un stage à la CPAM Strasbourg. Les données utilisées sont fictives et à des fins de démonstration uniquement.
-
-**⚠️ Important** : Ce système est destiné à des fins d'analyse et de recherche. Toute utilisation en production nécessite une validation approfondie et le respect des réglementations RGPD.a Analyse
+Ce projet est développé dans le cadre d'un projet à Strasbourg. Les données utilisées sont fictives et à des fins de démonstration uniquement.
 
 Ce site présente plusieurs projets de data analyse, organisés par rubriques.
 
