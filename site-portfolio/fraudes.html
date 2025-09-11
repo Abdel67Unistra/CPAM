@@ -3,583 +3,119 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Détection de Fraudes - CPAM Analytics</title>
+    <title>CPAM Analytics - Détection Fraudes</title>
     <link rel="stylesheet" href="assets/style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://cdn.plot.ly/plotly-2.26.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 </head>
 <body>
-    <header class="main-header">
-        <div class="container">
-            <div class="header-content">
-                <h1><i class="fas fa-shield-alt"></i> Détection de Fraudes</h1>
-                <p>Intelligence artificielle pour la détection d'anomalies</p>
-            </div>
-            <nav class="main-nav">
-                <a href="index.html"><i class="fas fa-home"></i> Accueil</a>
-                <a href="depenses.html"><i class="fas fa-chart-line"></i> Dépenses</a>
-                <a href="actes.html"><i class="fas fa-user-md"></i> Actes</a>
-                <a href="prevision.html"><i class="fas fa-crystal-ball"></i> Prévisions</a>
-                <a href="fraudes.html" class="active"><i class="fas fa-shield-alt"></i> Fraudes</a>
-                <a href="api.html"><i class="fas fa-code"></i> API</a>
-            </nav>
+    <nav class="navbar">
+        <div class="nav-container">
+            <h1 class="nav-logo">CPAM Analytics</h1>
+            <ul class="nav-menu">
+                <li><a href="index.html" class="nav-link">Accueil</a></li>
+                <li><a href="depenses.html" class="nav-link">Dépenses Santé</a></li>
+                <li><a href="actes.html" class="nav-link">Actes Médicaux</a></li>
+                <li><a href="prevision.html" class="nav-link">Prévisions</a></li>
+                <li><a href="fraudes.html" class="nav-link active">Détection Fraudes</a></li>
+                <li><a href="api.html" class="nav-link">API Analytics</a></li>
+            </ul>
         </div>
-    </header>
+    </nav>
 
     <main class="main-content">
-        <div class="container">
-            <!-- Alertes en temps réel -->
-            <section class="alerts-section">
-                <div class="alert-card high-priority">
-                    <div class="alert-icon">
-                        <i class="fas fa-exclamation-triangle"></i>
-                    </div>
-                    <div class="alert-content">
-                        <h4>Alerte Priorité Haute</h4>
-                        <p>15 nouvelles anomalies détectées dans les 2 dernières heures</p>
-                        <span class="alert-time">Il y a 8 minutes</span>
-                    </div>
-                    <button class="alert-action">Investiguer</button>
-                </div>
-            </section>
+        <div class="page-header">
+            <h1>🛡️ Détection de Fraudes</h1>
+            <p>Intelligence artificielle pour la détection d'anomalies avec analyses ML interactives</p>
+        </div>
 
-            <!-- Métriques de détection -->
-            <section class="stats-section">
-                <div class="stats-grid">
-                    <div class="stat-card">
-                        <div class="stat-icon">
-                            <i class="fas fa-search"></i>
-                        </div>
-                        <div class="stat-content">
-                            <h3>Cas Analysés</h3>
-                            <div class="stat-value" id="cas-analyses">156,789</div>
-                            <div class="stat-change positive">+2.4% cette semaine</div>
-                        </div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-icon">
-                            <i class="fas fa-exclamation-circle"></i>
-                        </div>
-                        <div class="stat-content">
-                            <h3>Fraudes Détectées</h3>
-                            <div class="stat-value" id="fraudes-detectees">2,347</div>
-                            <div class="stat-change negative">-5.7% vs mois dernier</div>
-                        </div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-icon">
-                            <i class="fas fa-percentage"></i>
-                        </div>
-                        <div class="stat-content">
-                            <h3>Taux de Détection</h3>
-                            <div class="stat-value" id="taux-detection">95.8%</div>
-                            <div class="stat-change positive">+1.2% précision</div>
-                        </div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-icon">
-                            <i class="fas fa-euro-sign"></i>
-                        </div>
-                        <div class="stat-content">
-                            <h3>Économies Réalisées</h3>
-                            <div class="stat-value" id="economies">€847K</div>
-                            <div class="stat-change positive">Ce mois-ci</div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Configuration de la détection -->
-            <section class="detection-config">
-                <div class="controls-card">
-                    <h3><i class="fas fa-cogs"></i> Configuration du Système de Détection</h3>
-                    <div class="controls-grid">
-                        <div class="control-group">
-                            <label for="algorithm-select">Algorithme de détection</label>
-                            <select id="algorithm-select" onchange="updateAlgorithmParams()">
-                                <option value="isolation_forest" selected>Isolation Forest</option>
-                                <option value="dbscan">DBSCAN Clustering</option>
-                                <option value="svm">One-Class SVM</option>
-                                <option value="lstm_autoencoder">LSTM Autoencoder</option>
-                                <option value="ensemble">Ensemble (Combiné)</option>
-                            </select>
-                        </div>
-                        <div class="control-group">
-                            <label for="sensitivity">Sensibilité</label>
-                            <select id="sensitivity">
-                                <option value="low">Faible (moins de faux positifs)</option>
-                                <option value="medium" selected>Moyenne</option>
-                                <option value="high">Élevée (plus de détections)</option>
-                                <option value="custom">Personnalisée</option>
-                            </select>
-                        </div>
-                        <div class="control-group">
-                            <label for="timeframe">Période d'analyse</label>
-                            <select id="timeframe">
-                                <option value="1h">1 heure</option>
-                                <option value="24h" selected>24 heures</option>
-                                <option value="7d">7 jours</option>
-                                <option value="30d">30 jours</option>
-                            </select>
-                        </div>
-                        <div class="control-group">
-                            <button class="btn-primary" onclick="lancerDetection()">
-                                <i class="fas fa-play"></i> Lancer Détection
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- Paramètres avancés -->
-                    <div id="algorithm-params" class="algorithm-params">
-                        <h4>Paramètres Isolation Forest</h4>
-                        <div class="params-grid">
-                            <div class="param-group">
-                                <label for="contamination">Taux de contamination</label>
-                                <input type="range" id="contamination" min="0.01" max="0.5" step="0.01" value="0.1">
-                                <span id="contamination-value">0.1</span>
-                            </div>
-                            <div class="param-group">
-                                <label for="n-estimators">Nombre d'arbres</label>
-                                <input type="range" id="n-estimators" min="50" max="500" step="10" value="100">
-                                <span id="estimators-value">100</span>
-                            </div>
-                            <div class="param-group">
-                                <label for="random-state">Graine aléatoire</label>
-                                <input type="number" id="random-state" value="42" min="1" max="1000">
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Visualisations des anomalies -->
-            <section class="anomalies-section">
-                <div class="charts-grid">
-                    <!-- Détection en temps réel -->
-                    <div class="chart-card full-width">
-                        <div class="chart-header">
-                            <h3><i class="fas fa-radar"></i> Détection d'Anomalies en Temps Réel</h3>
-                            <div class="chart-controls">
-                                <div class="status-indicator">
-                                    <span class="status-dot active"></span>
-                                    Surveillance active
-                                </div>
-                                <button class="btn-secondary" onclick="exportAnomalies()">
-                                    <i class="fas fa-download"></i> Export
-                                </button>
-                            </div>
-                        </div>
-                        <div id="chart-realtime" class="chart-container large"></div>
-                    </div>
-
-                    <!-- Distribution des scores d'anomalie -->
-                    <div class="chart-card">
-                        <div class="chart-header">
-                            <h3><i class="fas fa-chart-bar"></i> Scores d'Anomalie</h3>
-                        </div>
-                        <div id="chart-scores" class="chart-container"></div>
-                    </div>
-
-                    <!-- Clustering des comportements -->
-                    <div class="chart-card">
-                        <div class="chart-header">
-                            <h3><i class="fas fa-project-diagram"></i> Clustering DBSCAN</h3>
-                        </div>
-                        <div id="chart-clusters" class="chart-container"></div>
-                    </div>
-
-                    <!-- Évolution temporelle des fraudes -->
-                    <div class="chart-card">
-                        <div class="chart-header">
-                            <h3><i class="fas fa-chart-line"></i> Évolution Temporelle</h3>
-                        </div>
-                        <div id="chart-evolution-fraudes" class="chart-container"></div>
-                    </div>
-
-                    <!-- Analyse par type de fraude -->
-                    <div class="chart-card">
-                        <div class="chart-header">
-                            <h3><i class="fas fa-tags"></i> Types de Fraudes</h3>
-                        </div>
-                        <div id="chart-types-fraudes" class="chart-container"></div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Liste des cas suspects -->
-            <section class="cases-section">
-                <div class="cases-card">
-                    <h3><i class="fas fa-list"></i> Cas Suspects Récents</h3>
-                    <div class="table-container">
-                        <table class="suspicious-cases-table">
-                            <thead>
-                                <tr>
-                                    <th>ID Cas</th>
-                                    <th>Score</th>
-                                    <th>Type</th>
-                                    <th>Montant</th>
-                                    <th>Date</th>
-                                    <th>Statut</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr class="case-high">
-                                    <td>#FR-2025-8934</td>
-                                    <td><span class="score-badge high">0.95</span></td>
-                                    <td>Surfacturation</td>
-                                    <td>€15,750</td>
-                                    <td>2025-09-11 14:32</td>
-                                    <td><span class="status-badge investigating">En cours</span></td>
-                                    <td>
-                                        <button class="btn-action" onclick="investigateCase('FR-2025-8934')">
-                                            <i class="fas fa-search"></i>
-                                        </button>
-                                    </td>
-                                </tr>
-                                <tr class="case-medium">
-                                    <td>#FR-2025-8933</td>
-                                    <td><span class="score-badge medium">0.78</span></td>
-                                    <td>Double facturation</td>
-                                    <td>€3,250</td>
-                                    <td>2025-09-11 13:15</td>
-                                    <td><span class="status-badge confirmed">Confirmée</span></td>
-                                    <td>
-                                        <button class="btn-action" onclick="investigateCase('FR-2025-8933')">
-                                            <i class="fas fa-search"></i>
-                                        </button>
-                                    </td>
-                                </tr>
-                                <tr class="case-low">
-                                    <td>#FR-2025-8932</td>
-                                    <td><span class="score-badge low">0.62</span></td>
-                                    <td>Comportement atypique</td>
-                                    <td>€1,890</td>
-                                    <td>2025-09-11 12:48</td>
-                                    <td><span class="status-badge dismissed">Rejetée</span></td>
-                                    <td>
-                                        <button class="btn-action" onclick="investigateCase('FR-2025-8932')">
-                                            <i class="fas fa-search"></i>
-                                        </button>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Scripts de détection -->
-            <section class="scripts-section">
-                <div class="scripts-card">
-                    <h3><i class="fas fa-code"></i> Algorithmes de Détection</h3>
-                    <div class="scripts-tabs">
-                        <button class="tab-btn active" onclick="showTab('isolation-tab')">Isolation Forest</button>
-                        <button class="tab-btn" onclick="showTab('dbscan-tab')">DBSCAN</button>
-                        <button class="tab-btn" onclick="showTab('autoencoder-tab')">Autoencoder</button>
+        <div class="controls-panel">
+            <h3>🔧 Configuration du Système de Détection</h3>
+            <div class="analysis-container">
+                <div>
+                    <div class="control-group">
+                        <label for="algorithm-select">Algorithme de détection:</label>
+                        <select id="algorithm-select" onchange="updateAlgorithmParams()">
+                            <option value="isolation_forest" selected>Isolation Forest</option>
+                            <option value="dbscan">DBSCAN Clustering</option>
+                            <option value="svm">One-Class SVM</option>
+                            <option value="lstm_autoencoder">LSTM Autoencoder</option>
+                            <option value="ensemble">Ensemble (Combiné)</option>
+                        </select>
                     </div>
                     
-                    <div id="isolation-tab" class="tab-content active">
-                        <div class="script-controls">
-                            <button class="btn-primary" onclick="executeIsolationScript()">
-                                <i class="fas fa-play"></i> Exécuter Isolation Forest
-                            </button>
-                            <div class="execution-status" id="isolation-status">Prêt</div>
-                        </div>
-                        <pre class="code-block"><code class="language-python">
-# Détection de fraudes avec Isolation Forest
-from sklearn.ensemble import IsolationForest
-from sklearn.preprocessing import StandardScaler
-import pandas as pd
-import numpy as np
-
-def detecter_fraudes_isolation_forest(df_transactions, contamination=0.1):
-    """
-    Détection d'anomalies avec Isolation Forest
-    """
-    # Sélection des features pour la détection
-    features = [
-        'montant', 'frequence_mensuelle', 'nombre_beneficiaires',
-        'ratio_cout_moyen', 'ecart_type_montants', 'heure_soumission',
-        'jour_semaine', 'distance_moyenne_etablissement'
-    ]
-    
-    # Préparation des données
-    X = df_transactions[features].copy()
-    
-    # Traitement des valeurs manquantes
-    X = X.fillna(X.median())
-    
-    # Normalisation
-    scaler = StandardScaler()
-    X_scaled = scaler.fit_transform(X)
-    
-    # Configuration du modèle Isolation Forest
-    iso_forest = IsolationForest(
-        contamination=contamination,
-        n_estimators=100,
-        max_samples='auto',
-        random_state=42,
-        behaviour='new'
-    )
-    
-    # Entraînement et prédiction
-    predictions = iso_forest.fit_predict(X_scaled)
-    scores = iso_forest.decision_function(X_scaled)
-    
-    # Conversion des prédictions (-1: anomalie, 1: normal)
-    anomalies = predictions == -1
-    
-    # Ajout des résultats au DataFrame
-    df_results = df_transactions.copy()
-    df_results['is_anomaly'] = anomalies
-    df_results['anomaly_score'] = scores
-    
-    # Calcul de métriques de performance
-    nb_anomalies = anomalies.sum()
-    pourcentage_anomalies = (nb_anomalies / len(df_transactions)) * 100
-    
-    # Classification par seuils de score
-    score_percentiles = np.percentile(scores, [10, 25, 75, 90])
-    
-    def classify_risk(score):
-        if score < score_percentiles[0]:
-            return 'Très élevé'
-        elif score < score_percentiles[1]:
-            return 'Élevé'
-        elif score < score_percentiles[2]:
-            return 'Moyen'
-        elif score < score_percentiles[3]:
-            return 'Faible'
-        else:
-            return 'Très faible'
-    
-    df_results['risk_level'] = df_results['anomaly_score'].apply(classify_risk)
-    
-    return {
-        'dataframe': df_results,
-        'model': iso_forest,
-        'scaler': scaler,
-        'nb_anomalies': nb_anomalies,
-        'pourcentage_anomalies': pourcentage_anomalies,
-        'score_distribution': {
-            'min': scores.min(),
-            'max': scores.max(),
-            'mean': scores.mean(),
-            'std': scores.std()
-        }
-    }
-                        </code></pre>
+                    <div class="control-group">
+                        <label for="sensitivity">Sensibilité:</label>
+                        <select id="sensitivity">
+                            <option value="low">Faible (moins de faux positifs)</option>
+                            <option value="medium" selected>Moyenne</option>
+                            <option value="high">Élevée (plus de détections)</option>
+                            <option value="custom">Personnalisée</option>
+                        </select>
                     </div>
                     
-                    <div id="dbscan-tab" class="tab-content">
-                        <div class="script-controls">
-                            <button class="btn-primary" onclick="executeDBSCANScript()">
-                                <i class="fas fa-play"></i> Exécuter DBSCAN
-                            </button>
-                            <div class="execution-status" id="dbscan-status">Prêt</div>
-                        </div>
-                        <pre class="code-block"><code class="language-python">
-# Clustering DBSCAN pour détection d'anomalies
-from sklearn.cluster import DBSCAN
-from sklearn.preprocessing import StandardScaler
-from sklearn.metrics import silhouette_score
-import matplotlib.pyplot as plt
+                    <div class="control-group">
+                        <label for="timeframe">Période d'analyse:</label>
+                        <select id="timeframe">
+                            <option value="1h">1 heure</option>
+                            <option value="24h" selected>24 heures</option>
+                            <option value="7d">7 jours</option>
+                            <option value="30d">30 jours</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div>
+                    <div class="action-buttons">
+                        <button class="btn btn-primary" onclick="lancerDetection()">🚀 Lancer Détection</button>
+                        <button class="btn btn-secondary" onclick="executeIsolationScript()">🌲 Isolation Forest</button>
+                        <button class="btn btn-warning" onclick="executeDBSCANScript()">🎯 DBSCAN</button>
+                    </div>
+                    
+                    <div class="control-group">
+                        <label>Taux de contamination:</label>
+                        <input type="range" id="contamination" min="0.01" max="0.5" step="0.01" value="0.1">
+                        <small>Contamination: <span id="contamination-value">0.1</span></small>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-def detecter_anomalies_dbscan(df_data, eps=0.5, min_samples=5):
-    """
-    Détection d'anomalies par clustering DBSCAN
-    """
-    # Features comportementales
-    features = [
-        'montant_normalise', 'frequence_actes', 'variabilite_montants',
-        'heure_habituelle', 'jour_type', 'duree_moyenne_session'
-    ]
-    
-    X = df_data[features].copy()
-    
-    # Normalisation des données
-    scaler = StandardScaler()
-    X_scaled = scaler.fit_transform(X)
-    
-    # Application de DBSCAN
-    dbscan = DBSCAN(eps=eps, min_samples=min_samples, metric='euclidean')
-    cluster_labels = dbscan.fit_predict(X_scaled)
-    
-    # Identification des anomalies (cluster -1)
-    anomalies = cluster_labels == -1
-    nb_clusters = len(set(cluster_labels)) - (1 if -1 in cluster_labels else 0)
-    nb_noise = list(cluster_labels).count(-1)
-    
-    # Calcul du score de silhouette (si plus d'un cluster)
-    silhouette_avg = None
-    if nb_clusters > 1:
-        # Exclusion des points de bruit pour le calcul
-        non_noise_mask = cluster_labels != -1
-        if non_noise_mask.sum() > 1:
-            silhouette_avg = silhouette_score(
-                X_scaled[non_noise_mask], 
-                cluster_labels[non_noise_mask]
-            )
-    
-    # Analyse des clusters
-    cluster_stats = {}
-    for cluster_id in set(cluster_labels):
-        if cluster_id != -1:  # Ignorer le bruit
-            mask = cluster_labels == cluster_id
-            cluster_data = df_data[mask]
+        <div class="analysis-container">
+            <div class="chart-container">
+                <h3>🚨 Détection d'Anomalies en Temps Réel</h3>
+                <div id="chart-realtime" style="height: 400px;"></div>
+            </div>
             
-            cluster_stats[cluster_id] = {
-                'size': mask.sum(),
-                'mean_amount': cluster_data['montant_normalise'].mean(),
-                'std_amount': cluster_data['montant_normalise'].std(),
-                'mean_frequency': cluster_data['frequence_actes'].mean()
-            }
-    
-    # Ajout des résultats au DataFrame
-    df_results = df_data.copy()
-    df_results['cluster'] = cluster_labels
-    df_results['is_anomaly'] = anomalies
-    
-    # Score d'anomalie basé sur la distance au cluster le plus proche
-    from sklearn.metrics.pairwise import euclidean_distances
-    
-    anomaly_scores = np.zeros(len(X_scaled))
-    for i, point in enumerate(X_scaled):
-        if cluster_labels[i] == -1:  # Point de bruit
-            # Distance minimum aux centres de clusters
-            min_dist = float('inf')
-            for cluster_id in set(cluster_labels):
-                if cluster_id != -1:
-                    cluster_points = X_scaled[cluster_labels == cluster_id]
-                    if len(cluster_points) > 0:
-                        cluster_center = cluster_points.mean(axis=0)
-                        dist = euclidean_distances([point], [cluster_center])[0][0]
-                        min_dist = min(min_dist, dist)
-            anomaly_scores[i] = min_dist
-        else:
-            # Distance au centre de son propre cluster
-            cluster_points = X_scaled[cluster_labels == cluster_labels[i]]
-            cluster_center = cluster_points.mean(axis=0)
-            anomaly_scores[i] = euclidean_distances([point], [cluster_center])[0][0]
-    
-    df_results['anomaly_score'] = anomaly_scores
-    
-    return {
-        'dataframe': df_results,
-        'model': dbscan,
-        'scaler': scaler,
-        'nb_clusters': nb_clusters,
-        'nb_anomalies': nb_noise,
-        'silhouette_score': silhouette_avg,
-        'cluster_stats': cluster_stats,
-        'parameters': {'eps': eps, 'min_samples': min_samples}
-    }
-                        </code></pre>
-                    </div>
-                    
-                    <div id="autoencoder-tab" class="tab-content">
-                        <div class="script-controls">
-                            <button class="btn-primary" onclick="executeAutoencoderScript()">
-                                <i class="fas fa-play"></i> Exécuter Autoencoder
-                            </button>
-                            <div class="execution-status" id="autoencoder-status">Prêt</div>
-                        </div>
-                        <pre class="code-block"><code class="language-python">
-# LSTM Autoencoder pour détection d'anomalies séquentielles
-import tensorflow as tf
-from tensorflow.keras.models import Model
-from tensorflow.keras.layers import LSTM, Dense, RepeatVector, TimeDistributed
-import numpy as np
+            <div class="chart-container">
+                <h3>📊 Distribution des Scores d'Anomalie</h3>
+                <div id="chart-scores" style="height: 400px;"></div>
+            </div>
+        </div>
 
-def detecter_anomalies_lstm_autoencoder(df_sequences, sequence_length=30):
-    """
-    Détection d'anomalies avec LSTM Autoencoder
-    """
-    # Préparation des séquences temporelles
-    def create_sequences(data, seq_length):
-        sequences = []
-        for i in range(len(data) - seq_length + 1):
-            sequences.append(data[i:(i + seq_length)])
-        return np.array(sequences)
-    
-    # Features temporelles
-    features = ['montant', 'heure', 'jour_semaine', 'frequence']
-    data = df_sequences[features].values
-    
-    # Normalisation
-    from sklearn.preprocessing import MinMaxScaler
-    scaler = MinMaxScaler()
-    data_scaled = scaler.fit_transform(data)
-    
-    # Création des séquences
-    sequences = create_sequences(data_scaled, sequence_length)
-    
-    # Division train/test (80/20)
-    split_idx = int(0.8 * len(sequences))
-    train_sequences = sequences[:split_idx]
-    test_sequences = sequences[split_idx:]
-    
-    # Architecture LSTM Autoencoder
-    input_dim = train_sequences.shape[2]
-    
-    # Encodeur
-    inputs = tf.keras.Input(shape=(sequence_length, input_dim))
-    encoded = LSTM(64, activation='relu', return_sequences=True)(inputs)
-    encoded = LSTM(32, activation='relu', return_sequences=False)(encoded)
-    
-    # Décodeur
-    decoded = RepeatVector(sequence_length)(encoded)
-    decoded = LSTM(32, activation='relu', return_sequences=True)(decoded)
-    decoded = LSTM(64, activation='relu', return_sequences=True)(decoded)
-    decoded = TimeDistributed(Dense(input_dim))(decoded)
-    
-    # Modèle complet
-    autoencoder = Model(inputs, decoded)
-    autoencoder.compile(optimizer='adam', loss='mse')
-    
-    # Entraînement
-    history = autoencoder.fit(
-        train_sequences, train_sequences,
-        epochs=50,
-        batch_size=32,
-        validation_split=0.2,
-        verbose=0,
-        shuffle=True
-    )
-    
-    # Prédictions et calcul des erreurs de reconstruction
-    train_pred = autoencoder.predict(train_sequences)
-    test_pred = autoencoder.predict(test_sequences)
-    
-    # Erreur de reconstruction (MSE)
-    train_mse = np.mean(np.power(train_sequences - train_pred, 2), axis=(1, 2))
-    test_mse = np.mean(np.power(test_sequences - test_pred, 2), axis=(1, 2))
-    
-    # Seuil d'anomalie (95ème percentile des erreurs d'entraînement)
-    threshold = np.percentile(train_mse, 95)
-    
-    # Détection d'anomalies
-    test_anomalies = test_mse > threshold
-    
-    # Métriques de performance
-    anomaly_rate = np.sum(test_anomalies) / len(test_anomalies)
-    
-    return {
-        'model': autoencoder,
-        'scaler': scaler,
-        'threshold': threshold,
-        'train_mse': train_mse,
-        'test_mse': test_mse,
-        'anomalies': test_anomalies,
-        'anomaly_rate': anomaly_rate,
-        'training_history': history.history,
-        'sequence_length': sequence_length
-    }
-                        </code></pre>
-                    </div>
-                </div>
-            </section>
+        <div class="chart-container">
+            <h3>💻 Sortie des Algorithmes de Détection</h3>
+            <div id="script-output" class="script-output">
+Prêt à exécuter la détection de fraudes...
+
+🛡️ Algorithmes disponibles:
+- Isolation Forest: Détection d'anomalies par isolation
+- DBSCAN: Clustering basé sur la densité  
+- One-Class SVM: Machine à vecteurs de support
+- LSTM Autoencoder: Réseaux de neurones récurrents
+- Ensemble: Combinaison de plusieurs algorithmes
+
+📈 Métriques de détection:
+- Taux de détection: 95.8%
+- Faux positifs: < 2.1%  
+- Score d'anomalie: 0.0 (normal) à 1.0 (anomalie)
+- Économies réalisées: €847K ce mois
+
+⚠️ Alertes actives:
+- 15 nouvelles anomalies détectées (2h)
+- 3 cas en investigation
+- 2 fraudes confirmées aujourd'hui
+            </div>
         </div>
     </main>
 
